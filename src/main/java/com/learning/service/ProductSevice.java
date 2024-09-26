@@ -8,13 +8,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import org.hibernate.service.spi.ServiceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.learning.config.DatabaseException;
+import com.learning.config.NoDataFoundException;
 import com.learning.model.Advertisement;
 import com.learning.model.Product;
+import com.learning.model.SignUp;
 import com.learning.repository.AdvertisementRepo;
 import com.learning.repository.ProductRepository;
 
@@ -22,6 +29,8 @@ import com.learning.repository.ProductRepository;
 
 @Service
 public class ProductSevice implements ProductServiceImpl{
+	
+	private static final Logger log=LoggerFactory.getLogger(ProductSevice.class);
 
 	@Autowired
 	private	ProductRepository productRepository;
@@ -36,7 +45,7 @@ public class ProductSevice implements ProductServiceImpl{
 		try {
 			if(file !=null && ! file.isEmpty()) {
 				String fileName = file.getOriginalFilename();
-				String directoryPath="D:/SpringReactjs/login-app/src/img/";
+				String directoryPath="D:/SpringReactjs/login-app/public/ProductsImg/";
 				Path directory = Paths.get(directoryPath);
 				if (!Files.exists(directory)) {
 					Files.createDirectories(directory);
@@ -69,38 +78,10 @@ public class ProductSevice implements ProductServiceImpl{
 	}
 
 
-	@Transactional
 	@Override
-	public Advertisement uploadAdvertisement(Advertisement advertisement, MultipartFile poster)throws IOException {
+	public void deleteProduct(Long productId) {
 
-		try {
-			if(poster !=null && ! poster.isEmpty()) {
-
-				String fileName=poster.getOriginalFilename();
-				String directoryPath="D:/SpringReactjs/login-app/public/AdvertisementPoster/";
-				Path directory=Paths.get(directoryPath);
-				if(! Files.exists(directory)) {
-					Files.createDirectories(directory);
-				}
-				String uniqueFileName=uniqueFileName(fileName);
-				Path filePath=directory.resolve(uniqueFileName);
-				Files.write(filePath,poster.getBytes());
-				advertisement.setPoster(uniqueFileName.toString());
-			}
-			return	advertisementRepo.save(advertisement);
-		}
-		catch(FileNotFoundException e) {
-			e.printStackTrace();
-
-			throw new RuntimeException("Failed to save Advertisement ", e);
-		}
-	}
-
-
-	@Override
-	public void deleteProduct(String name) {
-
-		productRepository.deleteByProductName(name);
+		productRepository.deleteByProductName(productId);
 
 	}
 
@@ -109,12 +90,7 @@ public class ProductSevice implements ProductServiceImpl{
 		List<Product> list=productRepository.listAllProducts();
 		return list;
 	}
-
-	@Override
-	public List<Advertisement> listOfAds() {
-		List<Advertisement> list=advertisementRepo.listOfAds();	
-		return list;
-	}
+	
 
 
 	@Override
@@ -129,6 +105,14 @@ public class ProductSevice implements ProductServiceImpl{
 		int count=productRepository.productCount();
 
 		return count;
+	}
+
+	@Override
+	public List<Product> filterProducts(String productName, double productPrice) {
+
+   List<Product> filteredProducts=productRepository.filterProducts(productName,productPrice);
+
+		return filteredProducts;
 	}
 
 

@@ -80,7 +80,7 @@ public class DashboardController {
 		Advertisement advertisement=new Advertisement();
 		advertisement.setProductAd(productAd);
 		advertisement.setDiscountPercentage(discountPercentage);
-		Advertisement uploadAd=productServiceImpl.uploadAdvertisement(advertisement,poster);
+		Advertisement uploadAd=advertisementServiceImpl.uploadAdvertisement(advertisement,poster);
 
 		return ResponseEntity.ok("Uploaded Advertisement!!!!");
 	}

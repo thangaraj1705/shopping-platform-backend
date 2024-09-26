@@ -19,8 +19,8 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
 
 	@Modifying
 	@Transactional
-	@Query("DELETE FROM Product l WHERE l.productName =productName")
-	public void deleteByProductName(String productName);
+	@Query("DELETE FROM Product p WHERE p.productId =:productId")
+	public void deleteByProductName(Long productId);
 
 	@Query("SELECT p from Product p order by productId desc")
 	public List<Product> listAllProducts();
@@ -31,5 +31,7 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
 	@Query("SELECT p FROM Product p WHERE p.productName LIKE %:productName%")
 	public List<Product> searchProduct(String productName);
 
+	@Query("SELECT p FROM Product p WHERE p.productName LIKE %:productName% AND p.productPrice>=:productPrice")
+	public List<Product> filterProducts(String productName,double productPrice);
 
 }

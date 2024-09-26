@@ -1,5 +1,6 @@
 package com.learning.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,14 +25,20 @@ public interface UserRepository extends JpaRepository<SignUp,Long> {
 	@Query("SELECT u FROM SignUp u WHERE u.username = :usernameOrEmail OR u.email = :usernameOrEmail")
 	SignUp findByUsernameOrEmail(String usernameOrEmail);
 
-
 	@Modifying
 	@Transactional
 	@Query("UPDATE SignUp u SET u.failedAttempt =:failedAttempt WHERE u.username =:username")
 	public void updateFailedAttempt(int failedAttempt,String username);
 	
-
 	@Query("SELECT count(*) from SignUp p")
 	public int usersCount();
+	
+	@Query("SELECT u FROM SignUp u WHERE u.userRole is NULL")
+	public List<SignUp> listOfUsers();
+	
+	@Modifying
+	@Transactional
+	@Query("DELETE FROM SignUp u WHERE u.id=:id")
+	public void deleteUser(Long id);
 
 }

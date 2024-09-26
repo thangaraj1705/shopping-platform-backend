@@ -15,18 +15,16 @@ public interface ProductServiceImpl {
 	
 	public Product saveProduct(Product product,MultipartFile file) throws IOException;
 	
-	public void deleteProduct(String name);
+	public void deleteProduct(Long productId);
 	
 	public List<Product> listAllProducts();
 	
 	public List<Product> searchProduct(String name);
 
 	public int productCount();
-
-	public Advertisement uploadAdvertisement(Advertisement advertisement, MultipartFile poster) throws IOException;
-
-	public List<Advertisement> listOfAds();
 	
 	public String uniqueFileName(String filename);
+	
+	public List<Product> filterProducts(String productName,double productPrice);
 
 }
