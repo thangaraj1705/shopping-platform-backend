@@ -33,5 +33,8 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
 
 	@Query("SELECT p FROM Product p WHERE p.productName LIKE %:productName% AND p.productPrice>=:productPrice")
 	public List<Product> filterProducts(String productName,double productPrice);
+	
+	@Query("SELECT p FROM Product p "+"LEFT JOIN FETCH p.productFeatures "+"LEFT JOIN FETCH p.nutritionInfo "+"WHERE p.productId=:productId AND p.productName=:productName")
+	public Product findByProductIdAndProductName(Long productId, String productName);
 
 }

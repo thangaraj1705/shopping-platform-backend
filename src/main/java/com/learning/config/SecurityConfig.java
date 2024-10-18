@@ -23,7 +23,8 @@ public class SecurityConfig {
 	            .csrf().disable() 
 	            .authorizeRequests()
 	            .requestMatchers("/signup","/signin","/dashboard/statics","/addproduct","/advertisements","/offerProducts",
-	            		"/uploadAd","/uploadOffer","/delete","/listProducts","/search","/filter-offers-by-starting-price","/listuserdetails","/deleteuser","/ads/*").permitAll() 
+	            		"/uploadAd","/uploadOffer","/delete","/listProducts","/search","/filter-offers-by-starting-price","/listuserdetails","/deleteuser","/ads/*"
+	            		,"/product-details/*","/update-product/*").permitAll() 
 	            .anyRequest().authenticated(); 
 	        
 	        return http.build();

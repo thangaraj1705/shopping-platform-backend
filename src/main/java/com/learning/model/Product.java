@@ -2,9 +2,12 @@ package com.learning.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -33,7 +36,17 @@ public class Product {
 
 	@Column(name="RATING")
 	private double productRating;
-
+	
+	@Column(name="STOCK")
+	private double quantityInStock;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name ="PRODUCT_FEATURE_ID",referencedColumnName="PRODUCT_FEATURE_ID")
+	private ProductFeatures productFeatures;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name ="NUTRITION_ID",referencedColumnName="NUTRITION_ID")
+	private NutritionInfo nutritionInfo;
 
 
 	public Product() {
@@ -44,29 +57,21 @@ public class Product {
 		return productId;
 	}
 
-
-
 	public void setProductId(Long productId) {
 		this.productId = productId;
 	}
-
-
 
 	public String getProductName() {
 		return productName;
 	}
 
-
-
 	public void setProductName(String productName) {
 		this.productName = productName;
 	}
 
-
 	public String getProductDescription() {
 		return productDescription;
 	}
-
 
 
 	public void setProductDescription(String productDescription) {
@@ -74,11 +79,9 @@ public class Product {
 	}
 
 
-
 	public double getProductPrice() {
 		return productPrice;
 	}
-
 
 
 	public void setProductPrice(double productPrice) {
@@ -86,11 +89,9 @@ public class Product {
 	}
 
 
-
 	public double getProductDiscount() {
 		return productDiscount;
 	}
-
 
 
 	public void setProductDiscount(double productDiscount) {
@@ -104,11 +105,9 @@ public class Product {
 	}
 
 
-
 	public void setProductImgPath(String productImgPath) {
 		this.productImgPath = productImgPath;
 	}
-
 
 
 	public double getProductRating() {
@@ -117,11 +116,36 @@ public class Product {
 	}
 
 
-
 	public void setProductRating(double productRating) {
 		this.productRating = productRating;
 	}
 
+
+	public double getQuantityInStock() {
+		return quantityInStock;
+	}
+
+	public void setQuantityInStock(double quantityInStock) {
+		this.quantityInStock = quantityInStock;
+	}
+
+	public ProductFeatures getProductFeatures() {
+		return productFeatures;
+	}
+
+	public void setProductFeatures(ProductFeatures productFeatures) {
+		this.productFeatures = productFeatures;
+	}
+
+	public NutritionInfo getNutritionInfo() {
+		return nutritionInfo;
+	}
+
+	public void setNutritionInfo(NutritionInfo nutritionInfo) {
+		this.nutritionInfo = nutritionInfo;
+	}
+
+	
 	
 
 }

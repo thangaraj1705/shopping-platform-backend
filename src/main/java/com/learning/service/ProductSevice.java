@@ -115,5 +115,26 @@ public class ProductSevice implements ProductServiceImpl{
 		return filteredProducts;
 	}
 
+	@Override
+	public Product findByProductIdAndProductName(Long productId, String productName) {
+		
+		try {
+		Product productDetails=productRepository.findByProductIdAndProductName(productId, productName);
+
+			if(productDetails==null) {
+				throw new NoDataFoundException("No user found in Database");
+			}
+			return productDetails;
+		}
+		catch(DataAccessException e) {
+			log.error("Error accessing the database : ",e.getMessage(),e);
+			throw new DatabaseException("Error accessing the database",e);
+		}
+		catch(Exception e) {
+			log.error("Unexcepted error: ",e.getMessage(),e);
+			throw new ServiceException("An unexcepted error occurred",e);
+		}
+	}
+
 
 }

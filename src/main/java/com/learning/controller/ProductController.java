@@ -114,6 +114,22 @@ public class ProductController {
 		
 	}
 
+	@GetMapping("/product-details/{productName}")
+	public ResponseEntity<?> productDetails( @RequestParam("productId") Long productId,
+			@PathVariable("productName") String productName){
+				
+		try {
+			Product productDetails=productServiceImpl.findByProductIdAndProductName(productId, productName);
+			if(productDetails==null) {
+				return ResponseEntity.notFound().build();   //204  data not found
+			}
+			return ResponseEntity.ok(productDetails);  //200 data found
+
+		}
+		catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();   //500 server error
+		}
+	}
 
 
 

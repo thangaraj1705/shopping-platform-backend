@@ -18,7 +18,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtUtils {
 
-	private static final long Duration=5*60;
+	private static final long Duration=30*60;
 	
 	@Value("${secret.key}")
 	private String jwtSecret;

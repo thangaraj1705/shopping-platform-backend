@@ -26,5 +26,7 @@ public interface ProductServiceImpl {
 	public String uniqueFileName(String filename);
 	
 	public List<Product> filterProducts(String productName,double productPrice);
+	
+	public Product findByProductIdAndProductName(Long productId,String productName);
 
 }
