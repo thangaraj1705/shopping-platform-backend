@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.learning.model.Advertisement;
+import com.learning.model.Product;
 
 @EnableJpaRepositories
 @Repository
@@ -26,5 +27,9 @@ public interface AdvertisementRepo extends JpaRepository<Advertisement,Long> {
 	@Transactional
 	@Query("DELETE FROM Advertisement a WHERE a.advertisementId=:advertisementId")
 	public void deleteAdvertisement(Long advertisementId);
+
+
+	@Query("SELECT a FROM Advertisement a WHERE a.advertisementId=:advertisementId AND a.productAd=:productAd")
+	public Advertisement findByAdvertisementIdAndProductAdName(Long advertisementId, String productAd);
 
 }

@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.learning.config.DatabaseException;
 import com.learning.model.Advertisement;
+import com.learning.model.Product;
 
 @Component
 public interface AdvertisementServiceImpl {
@@ -22,5 +23,5 @@ public interface AdvertisementServiceImpl {
 
 	public void deleteAdvertisement(Long advertisementId);
 
-	
+	public Advertisement findByAdvertisementIdAndProductAdName(Long advertisementId,String productAd);
 }

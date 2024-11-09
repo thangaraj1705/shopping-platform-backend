@@ -21,6 +21,9 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
 	@Transactional
 	@Query("DELETE FROM Product p WHERE p.productId =:productId")
 	public void deleteByProductName(Long productId);
+	
+	@Query("SELECT p from Product p WHERE p.productId =:productId")
+	public Product findByProductId(Long productId);
 
 	@Query("SELECT p from Product p order by productId desc")
 	public List<Product> listAllProducts();

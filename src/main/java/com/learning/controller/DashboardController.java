@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.learning.dto.ProductRequestDTO;
 import com.learning.jwt.JwtUtils;
 import com.learning.model.Advertisement;
@@ -56,12 +57,14 @@ public class DashboardController {
 
 	@Autowired	
 	private	ProductFeatureServiceImpl ProductFeatureServiceImpl;
+	
+	@Autowired
+	private ProductRequestDTO productRequestDTO;
 
 	@PostMapping("/addproduct")
-	public ResponseEntity<?> createProduct(ProductRequestDTO productRequestDTO,
-			@RequestParam ("file")MultipartFile file) throws IOException {
-
-
+	public ResponseEntity<String> addProduct(
+	        @RequestPart("ProductRequestDTO") ProductRequestDTO productRequestDTO,
+	        @RequestPart(value = "file", required = false) MultipartFile file) throws IOException{
 
 		Product product=new Product();
 		product.setProductName(productRequestDTO.getProductName());
@@ -72,19 +75,19 @@ public class DashboardController {
 		product.setProductRating(0);
 
 		ProductFeatures productFeatures=new ProductFeatures();
-		productFeatures.setFlavour(productRequestDTO.getFlavour());
-		productFeatures.setProductLife(productRequestDTO.getProductLife());
-		productFeatures.setStorageInstructions(productRequestDTO.getStorageInstructions());
-		productFeatures.setVeg(productRequestDTO.getVeg());
-		productFeatures.setNonVeg(productRequestDTO.getNonVeg());
+		productFeatures.setFlavour(productRequestDTO.getProductFeaturesDTO().getFlavour());
+		productFeatures.setProductLife(productRequestDTO.getProductFeaturesDTO().getProductLife());
+		productFeatures.setStorageInstructions(productRequestDTO.getProductFeaturesDTO().getStorageInstructions());
+		productFeatures.setVeg(productRequestDTO.getProductFeaturesDTO().getVeg());
+		productFeatures.setNonVeg(productRequestDTO.getProductFeaturesDTO().getNonVeg());
 		productFeatures=ProductFeatureServiceImpl.saveProductFeature(productFeatures);
 
 		NutritionInfo nutritionInfo=new NutritionInfo();
-		nutritionInfo.setCalories(productRequestDTO.getCalories());
-		nutritionInfo.setCarbohydrates(productRequestDTO.getCarbohydrates());
-		nutritionInfo.setFats(productRequestDTO.getFats());
-		nutritionInfo.setProteins(productRequestDTO.getProteins());
-		nutritionInfo.setSugar(productRequestDTO.getSugar());
+		nutritionInfo.setCalories(productRequestDTO.getNutritionInfoDTO().getCalories());
+		nutritionInfo.setCarbohydrates(productRequestDTO.getNutritionInfoDTO().getCarbohydrates());
+		nutritionInfo.setFats(productRequestDTO.getNutritionInfoDTO().getFats());
+		nutritionInfo.setProteins(productRequestDTO.getNutritionInfoDTO().getProteins());
+		nutritionInfo.setSugar(productRequestDTO.getNutritionInfoDTO().getSugar());
 		nutritionInfo=nutritionInfoImpl.saveNutrition(nutritionInfo);
 
 
@@ -119,7 +122,7 @@ public class DashboardController {
 		Advertisement uploadAd=advertisementServiceImpl.uploadAdvertisement(advertisement,poster);
 
 		return ResponseEntity.ok("Uploaded Advertisement!!!!");
-		
+
 	}
 
 	@PostMapping("/uploadOffer")
@@ -137,7 +140,7 @@ public class DashboardController {
 		return ResponseEntity.ok("Uploaded Offers!!!!");
 	}
 
-	@GetMapping("/update-product/{productName}")
+	@GetMapping("/populate-product/{productName}")
 	public ResponseEntity<Product> updateProductDetails( @RequestParam("productId") Long productId,
 			@PathVariable("productName") String productName){
 
@@ -154,54 +157,94 @@ public class DashboardController {
 		}
 	}
 
-	@PutMapping("/update-product/{productId}/{productName}")
+	@PutMapping("/update-product/{productName}")
 	public ResponseEntity<String> updateProduct(
-	        @PathVariable("productId") Long productId,
+	        @RequestParam("productId") Long productId,
 	        @PathVariable("productName") String productName,
-	        @RequestPart("file") MultipartFile file, 
-	        @RequestBody ProductRequestDTO productRequestDTO) throws IOException {
+	        @RequestPart("ProductRequestDTO") ProductRequestDTO productRequestDTO,
+	        @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
 
-		Product product=productServiceImpl.findByProductIdAndProductName(productId, productName);
+	    System.out.println("Update product API called");
 
-		if (product == null) {
+	    Product product = productServiceImpl.findByProductIdAndProductName(productId, productName);
+
+	    if (product == null) {
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
 	    }
-		
-		product.setProductName(productRequestDTO.getProductName());
+	    product.setProductName(productRequestDTO.getProductName());
 		product.setProductDescription(productRequestDTO.getProductDescription());
 		product.setProductPrice(productRequestDTO.getProductPrice());
 		product.setProductDiscount(productRequestDTO.getProductDiscount());
 		product.setQuantityInStock(productRequestDTO.getQuantityInStock());
-		product.setProductRating(0);
 
-		ProductFeatures productFeatures=new ProductFeatures();
-		productFeatures.setFlavour(productRequestDTO.getFlavour());
-		productFeatures.setProductLife(productRequestDTO.getProductLife());
-		productFeatures.setStorageInstructions(productRequestDTO.getStorageInstructions());
-		productFeatures.setVeg(productRequestDTO.getVeg());
-		productFeatures.setNonVeg(productRequestDTO.getNonVeg());
-		productFeatures=ProductFeatureServiceImpl.saveProductFeature(productFeatures);
+	    ProductFeatures productFeatures = product.getProductFeatures() != null ? product.getProductFeatures() : new ProductFeatures();
+	    if (productRequestDTO.getProductFeaturesDTO() != null) {
+	    	productFeatures.setFlavour(productRequestDTO.getProductFeaturesDTO().getFlavour());
+			productFeatures.setProductLife(productRequestDTO.getProductFeaturesDTO().getProductLife());
+			productFeatures.setStorageInstructions(productRequestDTO.getProductFeaturesDTO().getStorageInstructions());
+			productFeatures.setVeg(productRequestDTO.getProductFeaturesDTO().getVeg());
+			productFeatures.setNonVeg(productRequestDTO.getProductFeaturesDTO().getNonVeg());
+	        productFeatures = ProductFeatureServiceImpl.saveProductFeature(productFeatures);
+	        product.setProductFeatures(productFeatures);
+	    }
 
-		NutritionInfo nutritionInfo=new NutritionInfo();
-		nutritionInfo.setCalories(productRequestDTO.getCalories());
-		nutritionInfo.setCarbohydrates(productRequestDTO.getCarbohydrates());
-		nutritionInfo.setFats(productRequestDTO.getFats());
-		nutritionInfo.setProteins(productRequestDTO.getProteins());
-		nutritionInfo.setSugar(productRequestDTO.getSugar());
-		nutritionInfo=nutritionInfoImpl.saveNutrition(nutritionInfo);
+	    NutritionInfo nutritionInfo = product.getNutritionInfo() != null ? product.getNutritionInfo() : new NutritionInfo();
+	    if (productRequestDTO.getNutritionInfoDTO() != null) {
+	    	nutritionInfo.setCalories(productRequestDTO.getNutritionInfoDTO().getCalories());
+			nutritionInfo.setCarbohydrates(productRequestDTO.getNutritionInfoDTO().getCarbohydrates());
+			nutritionInfo.setFats(productRequestDTO.getNutritionInfoDTO().getFats());
+			nutritionInfo.setProteins(productRequestDTO.getNutritionInfoDTO().getProteins());
+			nutritionInfo.setSugar(productRequestDTO.getNutritionInfoDTO().getSugar());
+	        nutritionInfo = nutritionInfoImpl.saveNutrition(nutritionInfo);
+	        product.setNutritionInfo(nutritionInfo);
+	    }
 
+	    Product updatedProduct = productServiceImpl.saveProduct(product, file);
 
-		product.setProductFeatures(productFeatures);
-		product.setNutritionInfo(nutritionInfo);		
+	    if (updatedProduct == null) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update product");
+	    }
 
-		Product create=productServiceImpl.saveProduct(product,file);
-
-		return ResponseEntity.ok("Product Created!!!");
-		
+	    return ResponseEntity.ok("Product updated successfully!");
 	}
 
 
+	@GetMapping("/update-ad/{productAd}")
+	public ResponseEntity<Advertisement> updateAdProductDetails( @RequestParam("advertisementId") Long advertisementId,
+			@PathVariable("productAd") String productAd){
 
+		try {
+			Advertisement updateAdProductDetails=advertisementServiceImpl.findByAdvertisementIdAndProductAdName(advertisementId, productAd);
+			if(updateAdProductDetails==null) {
+				return ResponseEntity.notFound().build();   //204  data not found
+			}
+			return ResponseEntity.ok(updateAdProductDetails);  //200 data found
 
+		}
+		catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();   //500 server error
+		}
+	}
 
+	@PutMapping("/update-ad/{productAd}")
+	public ResponseEntity<String> updateAdvertisement(@RequestPart("Advertisement") Advertisement advertisement, 
+	        @RequestParam("advertisementId") Long advertisementId,
+	        @PathVariable("productAd") String productAd,
+	        @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+
+		Advertisement updateAdProductDetails=advertisementServiceImpl.findByAdvertisementIdAndProductAdName(advertisementId, productAd);
+		if(updateAdProductDetails==null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Advertisement Product not found");
+		}
+		
+		updateAdProductDetails.setProductAd(advertisement.getProductAd());
+		updateAdProductDetails.setDiscountPercentage(advertisement.getDiscountPercentage());
+		Advertisement uploadAd=advertisementServiceImpl.uploadAdvertisement(advertisement,file);
+
+		return ResponseEntity.ok("Uploaded Advertisement!!!!");
+
+	}
+	
+	
+	
 }

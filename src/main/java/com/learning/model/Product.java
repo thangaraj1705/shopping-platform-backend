@@ -25,7 +25,7 @@ public class Product {
 	@Column(name="DESCRIPTION",nullable=false)
 	private String productDescription;
 
-	@Column(name="PRICE",nullable=false)
+	@Column(name="PRICE")
 	private double productPrice;
 
 	@Column(name="DISCOUNT")

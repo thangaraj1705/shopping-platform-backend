@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.learning.config.DatabaseException;
 import com.learning.config.NoDataFoundException;
 import com.learning.model.Advertisement;
+import com.learning.model.Product;
 import com.learning.repository.AdvertisementRepo;
 
 @Service
@@ -105,6 +106,26 @@ public class AdvertisementService implements AdvertisementServiceImpl{
 			throw new ServiceException("An unexcepted error occurred",e);
 		}
 
+	}
+
+	@Override
+	public Advertisement findByAdvertisementIdAndProductAdName(Long advertisementId, String productAd) {
+		try {
+			Advertisement adProductDetails=advertisementRepo.findByAdvertisementIdAndProductAdName(advertisementId, productAd);
+
+				if(adProductDetails==null) {
+					throw new NoDataFoundException("No user found in Database");
+				}
+				return adProductDetails;
+			}
+			catch(DataAccessException e) {
+				log.error("Error accessing the database : ",e.getMessage(),e);
+				throw new DatabaseException("Error accessing the database",e);
+			}
+			catch(Exception e) {
+				log.error("Unexcepted error: ",e.getMessage(),e);
+				throw new ServiceException("An unexcepted error occurred",e);
+			}
 	}
 
 

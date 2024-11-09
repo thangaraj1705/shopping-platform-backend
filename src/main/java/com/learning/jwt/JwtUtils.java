@@ -32,6 +32,7 @@ public class JwtUtils {
 		Date expiryAt=new Date(expiryTime);
 
 		Map<String, Object> claims = new HashMap<>();
+		claims.put("userId",signUp.getId());
 		claims.put("username",signUp.getUsername());
 		claims.put("email",signUp.getEmail());
 
@@ -48,17 +49,19 @@ public class JwtUtils {
 	}
 
 
-	public void verifyToken(String auth) throws Exception {
+	public Jws<Claims> verifyToken(String auth) throws Exception {
 
 		try {
 
 			Jws<Claims> jwsClaims = Jwts.parser()
 					.setSigningKey(jwtSecret)
 					.parseClaimsJws(auth);
+			return jwsClaims;
 		}
 		catch(Exception e) {
 			throw new AccessDeniedException("Access Denied");
 		}
+		
 
 
 	}

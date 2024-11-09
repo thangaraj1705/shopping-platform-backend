@@ -33,6 +33,9 @@ public interface UserRepository extends JpaRepository<SignUp,Long> {
 	@Query("SELECT count(*) from SignUp p")
 	public int usersCount();
 	
+	@Query("SELECT u FROM SignUp u WHERE u.id=:id")
+	public SignUp findByUserId(Long id);
+	
 	@Query("SELECT u FROM SignUp u WHERE u.userRole is NULL")
 	public List<SignUp> listOfUsers();
 	
